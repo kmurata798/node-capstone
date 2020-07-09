@@ -4,7 +4,10 @@ const app = express()
 
 // require handlebars
 const exphbs = require('express-handlebars');
+const bodyParser = require('body-parser');
+const models = require('./db/models')
 
+app.use(bodyParser.urlencoded({ extended: true }));
 // Use "main" as our default layout
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }));
 // Use handlebars to render
@@ -17,9 +20,23 @@ var events = [
     { title: "I am your third event", desc: "A great event that is super fun to look at and good", imgUrl: "https://www.thurstontalk.com/wp-content/uploads/2020/02/March-28-Tricksters-of-the-Animal-Kingdom.jpg" }
 ]
   
-// INDEX
+// INDEX view all posts
 app.get('/', (req, res) => {
     res.render('events-index', { events: events });
+})
+
+// CREATE new post route
+app.get('/events/new', (req, res) => {
+    res.render('events-new', {});
+})
+
+// CREATE new post route : POST
+app.post('/events', (req, res) => {
+    models.Event.create(req.body).then(event => {
+      res.redirect(`/`);
+    }).catch((err) => {
+      console.log(err)
+    });
 })
 
 // Choose a port to listen on
